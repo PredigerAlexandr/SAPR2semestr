@@ -7,7 +7,7 @@ namespace SAPR.Models
 {
     public class Field
     {
-        public int IdFeld { get; set; }
+        public int FieldId { get; set; }
         public string Name { get; set; }
         public string Alias { get; set; }
         public string DefaultValue { get; set; }

@@ -7,7 +7,8 @@ namespace SAPR.Models
 {
     public class Purchase
     {
-        public int IdPurchase { get; set; }
+        public int PurchaseId { get; set; }
+        public string Name { get; set; } 
         public List<Field> Fields { get; set; }
         public Rule BeforeRule { get; set; }
         public Rule AfterRule { get; set; }

@@ -1,0 +1,27 @@
+﻿@{ ViewData["Title"] = @ViewBag.Name; }
+
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+    <div>
+        <h3>Форма оформления Заявки</h3>
+        <p>Для оформления заявки заполните следующие поля:</p>
+        <form method="post" class=" = " needs-validation">
+            <div class="row g-3">
+                @foreach (var field in ViewBag.Fields)
+                {
+                    <div class="col-sm-6">
+                        <label for="firstName" class="form-label">@field.Name</label>
+                        <input type="text" class="form-control" id="@field.Alias" placeholder="" value="@field.DefaultValue" required="">
+                        <div class="invalid-feedback">
+                            Valid first name is required.
+                        </div>
+                    </div>
+                }
+            </div>
+        </form>
+    </div>
+</body>
+</html>
