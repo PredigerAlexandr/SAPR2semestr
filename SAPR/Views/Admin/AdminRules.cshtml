@@ -1,5 +1,31 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@model Purchase
+@{ ViewData["Title"] = "Список доступных заявок";
 }
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Администрирование правилами</title>
+</head>
+<body>
+    <h3>Администрирование правил</h3>
+    <h4>Страница: @Model.Name</h4>
+    <form method="post" action="~/Admin/AdminRules">
+        <div class="form-group">
+            <label for="exampleFormControlTextarea1">Правила типа "До"</label>
+            <textarea type="string" name="beforeRuleText" class="form-control" rows="3" >@Model.BeforeRule.RuleText</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="exampleFormControlTextarea1">Правила типа "После"</label>
+            <textarea type="string" name="afterRuleText" class="form-control" rows="3">@Model.BeforeRule.RuleText</textarea>
+        </div>
+
+        <div hidden="true" @*class="form-group"*@>
+            <input type="number" name="purchaseId" @*hidden="true"*@ @*class="form-control"*@ value="@Model.PurchaseId"/><br />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </form>
+</body>
+</html>

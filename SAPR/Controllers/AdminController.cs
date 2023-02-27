@@ -16,11 +16,46 @@ namespace SAPR.Controllers
             db = context;
         }
 
+        [Route("Admin/AdminRules/{id?}")]
         [HttpGet]
-        public IActionResult AdminRules()
+        public IActionResult AdminRules(int? id)
         {
-            ViewBag.Purchases = db.Purchases;
-            return View();
+            var rules = db.Rules.ToList();
+            var purchase = db.Purchases.Where(p => p.PurchaseId == id).FirstOrDefault();
+            return View(purchase);
+        }
+
+        [HttpPost]
+        public IActionResult AdminRules(string beforeRuleText, string afterRuleText, int purchaseId)
+        {
+            var purchase = db.Purchases.Where(p => p.PurchaseId == purchaseId).FirstOrDefault();
+            
+            Rule beforeRule = new Rule { PurchaseId = purchaseId,
+                Stage = "before",
+                RuleText = beforeRuleText
+            };
+
+            Rule afterRule = new Rule { PurchaseId = purchaseId,
+                Stage = "after",
+                RuleText = afterRuleText
+            };
+
+            db.Rules.Add(beforeRule);
+            db.Rules.Add(afterRule);
+            purchase.BeforeRule = beforeRule;
+            purchase.AfterRule = afterRule;
+            db.SaveChanges();
+
+            return Redirect("~/Admin/AdminIndex");
+        }
+
+
+
+        [HttpGet]
+        public IActionResult AdminIndex()
+        {
+            var tmp = db.Fields.ToList();
+            return View(db.Purchases.ToList());
         }
     }
 }

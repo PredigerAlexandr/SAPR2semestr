@@ -21,24 +21,21 @@ namespace SAPR.Controllers
 
         public IActionResult Index()
         {
+            var huipenis = db.Fields.ToList();
+            var kek = db.Purchases.FirstOrDefault();
             return View(db.Purchases.ToList());
         }
 
         [HttpGet]
+        [Route("Purchase/CreatePurchase/{id?}")]
         public IActionResult CreatePurchase(int? id)
         {
             if (id == null) return RedirectToAction("Index");
-            var zalupa = db.Fields;
+            var zalupa = db.Fields.ToList();
             var hui = db.Purchases.Where(p => p.PurchaseId == id).FirstOrDefault();
             List<Field> fields = hui.Fields;
             ViewBag.Fields = fields;
             return View();
         }
-
-        //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        //public IActionResult Error()
-        //{
-        //    return ;
-        //}
     }
 }

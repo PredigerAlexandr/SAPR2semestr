@@ -1,0 +1,26 @@
+﻿@model IEnumerable<Purchase>
+@{ ViewData["Title"] = "Список доступных заявок";
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Админ панель</title>
+</head>
+<body>
+    <h3>Администрирование заявок</h3>
+    <div>
+        <ul class="list-group">
+            @foreach (var purchase in Model)
+            {
+                <a href="/Admin/AdminRules/@purchase.PurchaseId" class="" aria-current="true">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    @purchase.Name
+                    <span class="badge bg-primary rounded-pill text-white">@purchase.Fields.Count()</span>
+                </li>
+                </a>
+            }
+        </ul>
+    </div>
+</body>
+</html>

@@ -10,7 +10,7 @@ using SAPR.Models;
 namespace SAPR.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    [Migration("20230221182347_Initial")]
+    [Migration("20230225173450_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -85,8 +85,8 @@ namespace SAPR.Migrations
                     b.Property<string>("RuleText")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Stage")
-                        .HasColumnType("bit");
+                    b.Property<string>("Stage")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("RuleId");
 

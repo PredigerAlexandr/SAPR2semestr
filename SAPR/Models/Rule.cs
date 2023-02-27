@@ -9,7 +9,7 @@ namespace SAPR.Models
     {
         public long RuleId { get; set; }
         public long PurchaseId { get; set; }
-        public bool Stage { get; set; }
+        public string Stage { get; set; }
         public string RuleText { get; set; }
     }
 }

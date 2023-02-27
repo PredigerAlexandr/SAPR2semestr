@@ -13,7 +13,7 @@ namespace SAPR.Migrations
                     RuleId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PurchaseId = table.Column<long>(type: "bigint", nullable: false),
-                    Stage = table.Column<bool>(type: "bit", nullable: false),
+                    Stage = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RuleText = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>

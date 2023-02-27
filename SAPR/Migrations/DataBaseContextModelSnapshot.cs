@@ -83,8 +83,8 @@ namespace SAPR.Migrations
                     b.Property<string>("RuleText")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Stage")
-                        .HasColumnType("bit");
+                    b.Property<string>("Stage")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("RuleId");
 
