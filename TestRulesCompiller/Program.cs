@@ -10,7 +10,7 @@ namespace TestRulesCompiler
     {
         static void Main(string[] args)
         {
-            string xmlText = "<NumberPhone>8902<NumberPhone><NumberPassport><NumberPassport>";
+            string xmlText = "<NumberPhone>8902<NumberPhone><SNILS><SNILS>";
 
             if (true)//IsBuild
             {
@@ -25,12 +25,8 @@ namespace TestRulesCompiler
                 var beforeRulesTree = RuleCompiller.RuleCompiller.BuildRulesTree(beforeRulesXML, fields, codeTreeHandlerBeforeRules);
                 var afterRulesTree = RuleCompiller.RuleCompiller.BuildRulesTree(afterRulesXML, fields, codeTreeHandlerAfterRules);
 
-                //bool result = FieldsAnalyser.CheckFields(documentShema);
-
-                //RulesCodeBuilder.BuildCodeFromRulesTree(tree, "GeneratedValidator", 11, 9549);
-
                 string code = RulesCodeBuilder.BuildValidationClass(beforeRulesTree, afterRulesTree, "GeneratedValidator", 11, 9549);
-                File.WriteAllText(@"D:\УТП\utp_norbit\RuleCompiller\code.cs", code, Encoding.Default);
+                File.WriteAllText(@"C:\Users\Alexandr\Desktop\_\6 семестр УлГТУ ИВТ\САПР\RuleCompiller\code.cs", code, Encoding.Default);
             }
             else
             {

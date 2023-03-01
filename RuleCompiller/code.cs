@@ -1,24 +1,18 @@
 using RuleCompiller;
-using RuleCompiller.Plugs;
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-namespace GOS_2._0.Process.Actions 
+namespace SAPR.RuleCompiller 
 {
-    public class GeneratedValidator :
-     BaseDocumentProcess 
+    public class GeneratedValidator 
     {
-        public override async Task<object> GetAsync(string xmlData, string parm, ApiHandlerModel handler, PersonModel person, BaseUnitOfWork unitOfWork, string filter = "", string language = "ru-RU",  Dictionary<string, object> handlerParams = null)
+        public static string BeforeCheck()
         {
-            var validationData = new ValidationData(ValidationType.before, new string [] {"Code","Amount"}, 11, 9549);
+            var validationData = new ValidationData(ValidationType.before, new string [] {"SNILS"}, 11, 9549);
             List<string> violations = new List<string>();
-            if(string.IsNullOrEmpty(validationData["Code"]) && string.IsNullOrWhiteSpace(validationData["Code"]))
+            if(!string.IsNullOrEmpty(validationData["SNILS"]))
             {
-                violations.Add("Поле \"Code\" должно быть заполнено!");
-            }
-            if(!string.IsNullOrEmpty(validationData["Amount"]))
-            {
-                violations.Add("Поле \"Amount\" должно оставаться пустым!");
+                violations.Add("Номер процедуры надо          оставить пустым");
             }
             if(violations.Count > 0)
             {
@@ -32,10 +26,14 @@ namespace GOS_2._0.Process.Actions
             }
             return "";
         }
-        public override async Task<object> ProcessAsync(string xmlData, string parm, ApiHandlerModel handler, PersonModel person, BaseUnitOfWork unitOfWork, string sign = "", FilesContainerModel filesContainerModel = null, Dictionary<string, object> handlerParams = null)
+        public static string AfterChack(string xmlData)
         {
-            var validationData = new ValidationData(ValidationType.after, new string [] {}, 11, 9549, xmlData);
+            var validationData = new ValidationData(ValidationType.after, new string [] {"PhoneNumber"}, 11, 9549, xmlData);
             List<string> violations = new List<string>();
+            if(string.IsNullOrEmpty(validationData["PhoneNumber"]) && string.IsNullOrWhiteSpace(validationData["PhoneNumber"]))
+            {
+                violations.Add("Свойство \"PhoneNumber\" обязательно для заполнения.");
+            }
             if(violations.Count > 0)
             {
                 string errors = "<Errors>";

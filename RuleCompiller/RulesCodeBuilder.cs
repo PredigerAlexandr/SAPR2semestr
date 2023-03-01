@@ -25,27 +25,26 @@ namespace RuleCompiller
             StringBuilder codeText = new StringBuilder();
             codeText.Append(
                 "using RuleCompiller;" +
-                "using RuleCompiller.Plugs;" + //затычка удалить
                 "using System;" +
                 "using System.Threading.Tasks;" +
                 "using System.Collections.Generic;" +
 
 
-                "namespace GOS_2._0.Process.Actions {" +
-                "public class " + className + " : BaseDocumentProcess {"
+                "namespace SAPR.RuleCompiller {" +
+                "public class " + className + " {"
             );
 
             //Build before validation
             if (beforeValidationRoot != null)
             {
-                codeText.Append("public override async Task<object> GetAsync");
+                codeText.Append("public static string BeforeCheck");
                 codeText.Append(BuildValidationFunctionBodyWithArgsFromRulesTree(ValidationType.before, beforeValidationRoot, beforeUsingProperties, tradeSectionId, modelId));
             }
 
             if (afterValidationRoot != null)
             {
                 //BuildAfterValidation
-                codeText.Append("public override async Task<object> ProcessAsync");
+                codeText.Append("public static string AfterChack");
                 codeText.Append(BuildValidationFunctionBodyWithArgsFromRulesTree(ValidationType.after, afterValidationRoot, afterUsingProperties, tradeSectionId, modelId));
 
             }
@@ -105,14 +104,14 @@ namespace RuleCompiller
             {
                 case ValidationType.before:
                     codeText.Insert(0,
-                        "(string " + codeTreeHandler.xmlDataParameterName + ", string parm, ApiHandlerModel handler, PersonModel person, BaseUnitOfWork unitOfWork, string filter = \"\", string language = \"ru-RU\",  Dictionary<string, object> handlerParams = null){" +
+                        "(){" +
                         $"var " + codeTreeHandler.validationDataVariableName + $" = new ValidationData(ValidationType.before, new string [] {{{properties.ToString()}}}, " +
                         $"{tradeSectionId}, {modelId});"
                     );
                     break;
                 case ValidationType.after:
                     codeText.Insert(0,
-                        "(string " + codeTreeHandler.xmlDataParameterName + ", string parm, ApiHandlerModel handler, PersonModel person, BaseUnitOfWork unitOfWork, string sign = \"\", FilesContainerModel filesContainerModel = null, Dictionary<string, object> handlerParams = null){" +
+                        "(string " + codeTreeHandler.xmlDataParameterName + "){" +
                         $"var " + codeTreeHandler.validationDataVariableName + $" = new ValidationData(ValidationType.after, new string [] {{{properties.ToString()}}}, " +
                         $"{tradeSectionId}, {modelId}, " + codeTreeHandler.xmlDataParameterName + ");"
                     );

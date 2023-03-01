@@ -85,7 +85,7 @@ namespace RuleCompiller.Validators
                 var requiredErrorMessage = xRule.Attribute("requiredErrorMessage");
 
                 //объект поля по которому составлено правило
-                var fieldSchema = fields.Where(p => p.Name == field.Value).ToList()[0];
+                //var fieldSchema = fields.Where(p => p.Name == field.Value).ToList()[0];
 
                 var compares = xRule.XPathSelectElements(".//compare");
                 var regexes = xRule.XPathSelectElements(".//regex");

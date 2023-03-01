@@ -13,12 +13,12 @@
     <form method="post" action="~/Admin/AdminRules">
         <div class="form-group">
             <label for="exampleFormControlTextarea1">Правила типа "До"</label>
-            <textarea type="string" name="beforeRuleText" class="form-control" rows="3" >@Model.BeforeRule.RuleText</textarea>
+            <textarea type="string" name="beforeRuleText" class="form-control" rows="3" >@(Model.BeforeRule is null ? "" : Model.BeforeRule.RuleText)</textarea>
         </div>
 
         <div class="form-group">
             <label for="exampleFormControlTextarea1">Правила типа "После"</label>
-            <textarea type="string" name="afterRuleText" class="form-control" rows="3">@Model.BeforeRule.RuleText</textarea>
+            <textarea type="string" name="afterRuleText" class="form-control" rows="3">@(Model.AfterRule is null ? "" : Model.AfterRule.RuleText)</textarea>
         </div>
 
         <div hidden="true" @*class="form-group"*@>

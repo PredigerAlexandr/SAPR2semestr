@@ -16,7 +16,7 @@ namespace RuleCompiller
         internal Dictionary<string, FieldInfo> fieldsInfo = new Dictionary<string, FieldInfo>();
 
 
-        public ValidationData(ValidationType type, string[] checkFields, long tradeSectionId, long modelId, string rootXml = null)
+        public ValidationData(ValidationType type, string[] checkFields, long purchaseId, string rootXml = null)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {

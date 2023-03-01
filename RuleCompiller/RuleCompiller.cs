@@ -99,34 +99,23 @@ namespace RuleCompiller
             var result = new RuleComposite(codeTreeHandler);
             foreach (var xRule in ruleXml.XPathSelectElements("rule"))
             {
-                int lineNumber = ((IXmlLineInfo)xRule).LineNumber;
-
                 var ruleType = xRule.Attribute("type");
-                var ruleName = xRule.Attribute("ruleName");
-                var ruleSchemaType = xRule.Attribute("schemaType");
 
                 if (ruleType == null)
-                    throw new ApplicationException(lineNumber + "Не указан тип правила.");
+                    throw new ApplicationException("Не указан тип правила.");
 
-                RuleSchemaType ruleScemaType = RuleSchemaType.All;
-                //if (ruleSchemaType != null && _violationSchemaTypeMap.ContainsKey(ruleSchemaType.Value.ToLower()))
-                //    ruleScemaType = _violationSchemaTypeMap[ruleSchemaType.Value.ToLower()];
 
                 switch (ruleType.Value)
                 {
                     case "condition": //if else then
                         {
                             var rule = ConditionRule.Parse(xRule, fields, codeTreeHandler);
-                            rule.Name = ruleName == null ? string.Empty : ruleName.Value;
-                            rule.SchemaType = ruleScemaType;
                             result.Add(rule);
                             break;
                         }
                     case "business": //sql и лямбда выражения
                         {
                             var rule = BusinessRule.Parse(xRule, codeTreeHandler);
-                            rule.Name = ruleName == null ? string.Empty : ruleName.Value;
-                            rule.SchemaType = ruleScemaType;
                             result.Add(rule);
                             var tmp = rule.Match(new ValidationData(ValidationType.before, new string[] { "Amount" }, 11, 9549));
                             break;
@@ -134,26 +123,17 @@ namespace RuleCompiller
                     case "validation":
                         {
                             var rule = ValidationRule.Parse(xRule, fields, codeTreeHandler);
-                            rule.Name = ruleName == null ? string.Empty : ruleName.Value;
-                            rule.SchemaType = ruleScemaType;
                             result.Add(rule);
                             break;
                         }
                     case "select": //case, default(else), isnull rules
                         {
                             var rule = SelectCaseRule.Parse(xRule, fields, codeTreeHandler);
-                            rule.Name = ruleName == null ? string.Empty : ruleName.Value;
-                            rule.SchemaType = ruleScemaType;
                             result.Add(rule);
                             break;
                         }
-                    case "comment":
-                        //IssueId #95756
-                        //2020-06-23 - Снегирь М.С.
-                        //Введен новый тип правила - "Комментарий"
-                        continue;
                     default:
-                        throw new Exception(lineNumber + "Задан неизвестный тип правила.");
+                        throw new Exception("Задан неизвестный тип правила.");
                 }
 
                 if (ruleFactory == null) continue;

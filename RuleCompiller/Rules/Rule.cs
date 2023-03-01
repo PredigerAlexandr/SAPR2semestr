@@ -18,56 +18,29 @@ namespace RuleCompiller.Validators
         /// <param name="violationType"></param>
         protected Rule(RuleViolationType violationType, CodeTreeHandler codeThreeHandler)
         {
-            // ReSharper disable DoNotCallOverridableMethodsInConstructor
             this.codeTreeHandler = codeThreeHandler;
             ViolationType = violationType;
-            // ReSharper restore DoNotCallOverridableMethodsInConstructor
         }
 
         public string BuildValidatorCode(string errorExpression = "", string successExpression = "")
         {
-            codeTreeHandler.validatorsStack.Push(this.GetType().Name);
+            //codeTreeHandler.validatorsStack.Push(this.GetType().Name);
 
             //Optimization part
             int counterTerminateDelimiter = 0;
             if (!string.IsNullOrEmpty(successExpression))
             {
                 if (!CompileTool.IsExpressionInsideBlock(successExpression)) successExpression = "{" + successExpression + "}";
-                //string temp = successExpression.Replace(" ", "").Replace(";;", ";");
-                //counterTerminateDelimiter = 0;
-                //for (int i = 0; i < temp.Length; i++)
-                //{
-                //    if (temp[i] == ';' && ++counterTerminateDelimiter > 1) break;
-                //}
-                //if (counterTerminateDelimiter == 0) successExpression += ';';
-                //if (
-                //    counterTerminateDelimiter > 1 && 
-                //    successExpression[0] != '{' && 
-                //    successExpression[successExpression.Length-1] != '}'
-                //)
-
             }
             else successExpression = "";
             if (!string.IsNullOrEmpty(errorExpression))
             {
                 if (!CompileTool.IsExpressionInsideBlock(errorExpression)) errorExpression = "{" + errorExpression + "}";
-                //string temp = errorExpression.Replace(" ", "").Replace(";;", ";");
-                //counterTerminateDelimiter = 0;
-                //for (int i = 0; i < temp.Length; i++)
-                //{
-                //    if (temp[i] == ';' && ++counterTerminateDelimiter > 1) break;
-                //}
-                //if (counterTerminateDelimiter == 0) errorExpression += ';';
-                //if (
-                //    counterTerminateDelimiter > 1 &&
-                //    errorExpression[0] != '{' &&
-                //    errorExpression[successExpression.Length - 1] != '}'
-                //) 
             }
             else errorExpression = "";
 
             string code = CompileValidatorCode(errorExpression, successExpression);
-            codeTreeHandler.validatorsStack.Pop();
+            //codeTreeHandler.validatorsStack.Pop();
             return code;
         }
 

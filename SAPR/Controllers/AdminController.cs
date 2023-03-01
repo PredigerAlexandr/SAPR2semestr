@@ -28,22 +28,41 @@ namespace SAPR.Controllers
         [HttpPost]
         public IActionResult AdminRules(string beforeRuleText, string afterRuleText, int purchaseId)
         {
+            var rules = db.Rules.ToList();
             var purchase = db.Purchases.Where(p => p.PurchaseId == purchaseId).FirstOrDefault();
+
+
+
             
-            Rule beforeRule = new Rule { PurchaseId = purchaseId,
-                Stage = "before",
-                RuleText = beforeRuleText
-            };
 
-            Rule afterRule = new Rule { PurchaseId = purchaseId,
-                Stage = "after",
-                RuleText = afterRuleText
-            };
+            if (purchase.BeforeRule != null)
+            {
+                purchase.BeforeRule.RuleText = beforeRuleText;
+            }
+            else
+            {
+                purchase.BeforeRule = new Rule
+                {
+                    PurchaseId = purchaseId,
+                    Stage = "before",
+                    RuleText = beforeRuleText
+                };
+            }
 
-            db.Rules.Add(beforeRule);
-            db.Rules.Add(afterRule);
-            purchase.BeforeRule = beforeRule;
-            purchase.AfterRule = afterRule;
+            if (purchase.AfterRule != null)
+            { 
+                purchase.AfterRule.RuleText = afterRuleText;
+            }
+            else
+            {
+                purchase.AfterRule = new Rule
+                {
+                    PurchaseId = purchaseId,
+                    Stage = "after",
+                    RuleText = afterRuleText
+                };
+            }
+
             db.SaveChanges();
 
             return Redirect("~/Admin/AdminIndex");
