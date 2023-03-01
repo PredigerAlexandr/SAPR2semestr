@@ -18,8 +18,8 @@ namespace RuleCompiller
 {
     public class RuleCompiller
     {
-        public static string connectionString = "Data Source=TE-DB;Initial Catalog=UTP_TEST;User ID=utpProtoUser;Password=w1v4MdYK8z;";
-        public static string GetRules(int tradeSectionId, long modelId, string targetObjectName, ValidationType validationType = ValidationType.after)
+        public static string connectionString = "Server=(localdb)\\mssqllocaldb;Database=mobilestoredb;Trusted_Connection=True;MultipleActiveResultSets=true;";
+        public static string GetRules(int purchaseId, ValidationType validationType = ValidationType.after)
         {
             string rules = "";
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -27,30 +27,28 @@ namespace RuleCompiller
                 connection.Open();
                 using (
                     SqlCommand command = new SqlCommand(
-                        "DECLARE @modelHistoryid INT = (Select ActiveModelHistoryId from Model WHERE TradeSectionId = @tradeSectionId  AND Id = @modelId);" +
-                        "EXEC[dbo].[ModelVerificationGetRules] @TradeSectionId = @tradeSectionId, @ModelHistoryId = @modelHistoryid, @object = @targetObjectName, @CheckStage = @CheckStage",
+                        "Select * from Rules " +
+                        "Where PurchaseId = @purchaseId AND Stage = @stage",
                         connection
                     )
                 )
                 {
                     command.CommandType = System.Data.CommandType.Text;
-                    command.Parameters.AddWithValue("@tradeSectionId", tradeSectionId);
-                    command.Parameters.AddWithValue("@modelId", modelId);
-                    command.Parameters.AddWithValue("@targetObjectName", targetObjectName);
+                    command.Parameters.AddWithValue("@purchaseId", purchaseId);
                     if (validationType == ValidationType.before)
                     {
-                        command.Parameters.AddWithValue("@CheckStage", "before");
+                        command.Parameters.AddWithValue("@stage", "before");
                     }
                     else
                     {
-                        command.Parameters.AddWithValue("@CheckStage", "after");
+                        command.Parameters.AddWithValue("@stage", "after");
                     }
 
                     var reader = command.ExecuteReader();
 
                     while (reader.Read())
                     {
-                        if (reader["Expression"] is string) rules = (string)reader["Expression"];
+                        if (reader["RuleText"] is string) rules = (string)reader["RuleText"];
                     }
                 }
             }
@@ -64,10 +62,16 @@ namespace RuleCompiller
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                using (SqlCommand command = new SqlCommand("GetSimpleDocumentObjects", connection))
+                using (
+                    SqlCommand command = new SqlCommand(
+                        "Select * from Fields " +
+                        "Where PurchaseId = @purchaseId",
+                        connection
+                    )
+                )
                 {
-                    command.CommandType = System.Data.CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@PurchaseId", purchaseId);
+                    command.CommandType = System.Data.CommandType.Text;
+                    command.Parameters.AddWithValue("@purchaseId", purchaseId);
 
                     var reader = command.ExecuteReader();
 
@@ -75,30 +79,15 @@ namespace RuleCompiller
                     {
                         listFields.Add(new DocumentSchema
                         {
-                            Code = (string)reader["Code"],
-                            DataTypeId = (string)reader["DataTypeId"],
-                            DefaultValue = (string)(reader["DefaultValue"] is not string ? "" : reader["DefaultValue"]),
-                            Description = (string)reader["Description"],
-                            Object = (string)reader["Object"],
-                            IsRequired = (bool)reader["isRequired"],
-                            IsUnique = (bool)reader["isUnique"],
-                            IsNotRemove = (bool)reader["isNotRemove"],
-                            IsReadOnly = (bool)reader["ReadOnly"],
-                            IsBaseObject = (bool)reader["IsBaseObject"],
-                            IsServiceObject = (bool)reader["IsServiceObject"],
-                            IsCrossObject = (bool)reader["IsCrossObject"],
-                            DeleteIfEmpty = (bool)(reader["DeleteIfEmpty"] is not bool ? false : reader["DeleteIfEmpty"]),
+                            Alias = (string)reader["Alias"],
                             Name = (string)reader["Name"],
-                            IsTemporary = (bool)(reader["IsTemporary"] is not bool ? false : reader["IsTemporary"]),
-                            UniqueKey = (string)(reader["UniqueKey"] is not string ? "" : reader["UniqueKey"]),
-                            DoNotSaveToDocumentObject = (bool)(reader["DoNotSaveToDocumentObject"] is not bool ? false : reader["DoNotSaveToDocumentObject"])
-                        }
-                        );
+                            DefaultValue = (string)(reader["DefaultValue"] is not string ? "" : reader["DefaultValue"]),
+                        });
                     }
                 }
-            }
 
-            return listFields;
+                return listFields;
+            }
         }
 
         public static RuleComposite BuildRulesTree(string ruleExpression, List<DocumentSchema> fields, CodeTreeHandler codeTreeHandler, ICustomRuleFactory ruleFactory = null)
@@ -210,29 +199,29 @@ namespace RuleCompiller
 
                     while (reader.Read())
                     {
-                        listFields.Add(new DocumentSchema
-                        {
-                            Code = (string)reader["Code"],
-                            DataTypeId = (string)reader["DataTypeId"],
-                            DefaultValue = (string)(reader["DefaultValue"] is not string ? "" : reader["DefaultValue"]),
-                            Description = (string)reader["Description"],
-                            Object = (string)reader["Object"],
-                            IsRequired = (bool)reader["isRequired"],
-                            IsUnique = (bool)reader["isUnique"],
-                            IsNotRemove = (bool)reader["isNotRemove"],
-                            IsReadOnly = (bool)reader["ReadOnly"],
-                            IsBaseObject = (bool)reader["IsBaseObject"],
-                            IsServiceObject = (bool)reader["IsServiceObject"],
-                            IsCrossObject = (bool)reader["IsCrossObject"],
-                            DeleteIfEmpty = (bool)(reader["DeleteIfEmpty"] is not bool ? false : reader["DeleteIfEmpty"]),
-                            Name = (string)reader["Name"],
-                            IsTemporary = (bool)(reader["IsTemporary"] is not bool ? false : reader["IsTemporary"]),
-                            UniqueKey = (string)(reader["UniqueKey"] is not string ? "" : reader["UniqueKey"]),
-                            DoNotSaveToDocumentObject = (bool)(reader["DoNotSaveToDocumentObject"] is not bool ? false : reader["DoNotSaveToDocumentObject"]),
-                            ValuePath = (string)(reader["ValuePath"] is not string ? "" : reader["ValuePath"]),
-                            DoNotLowerCase = (bool)(reader["DoNotLowerCase"] is not bool ? false : reader["DoNotLowerCase"])
-                        }
-                        );
+                        //listFields.Add(new DocumentSchema
+                        //{
+                        //    Code = (string)reader["Code"],
+                        //    DataTypeId = (string)reader["DataTypeId"],
+                        //    DefaultValue = (string)(reader["DefaultValue"] is not string ? "" : reader["DefaultValue"]),
+                        //    Description = (string)reader["Description"],
+                        //    Object = (string)reader["Object"],
+                        //    IsRequired = (bool)reader["isRequired"],
+                        //    IsUnique = (bool)reader["isUnique"],
+                        //    IsNotRemove = (bool)reader["isNotRemove"],
+                        //    IsReadOnly = (bool)reader["ReadOnly"],
+                        //    IsBaseObject = (bool)reader["IsBaseObject"],
+                        //    IsServiceObject = (bool)reader["IsServiceObject"],
+                        //    IsCrossObject = (bool)reader["IsCrossObject"],
+                        //    DeleteIfEmpty = (bool)(reader["DeleteIfEmpty"] is not bool ? false : reader["DeleteIfEmpty"]),
+                        //    Name = (string)reader["Name"],
+                        //    IsTemporary = (bool)(reader["IsTemporary"] is not bool ? false : reader["IsTemporary"]),
+                        //    UniqueKey = (string)(reader["UniqueKey"] is not string ? "" : reader["UniqueKey"]),
+                        //    DoNotSaveToDocumentObject = (bool)(reader["DoNotSaveToDocumentObject"] is not bool ? false : reader["DoNotSaveToDocumentObject"]),
+                        //    ValuePath = (string)(reader["ValuePath"] is not string ? "" : reader["ValuePath"]),
+                        //    DoNotLowerCase = (bool)(reader["DoNotLowerCase"] is not bool ? false : reader["DoNotLowerCase"])
+                        //}
+                        //);
                     }
                 }
             }
