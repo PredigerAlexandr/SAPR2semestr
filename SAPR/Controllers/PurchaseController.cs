@@ -33,8 +33,19 @@ namespace SAPR.Controllers
             if (id == null) return RedirectToAction("Index");
             var zalupa = db.Fields.ToList();
             var hui = db.Purchases.Where(p => p.PurchaseId == id).FirstOrDefault();
-            List<Field> fields = hui.Fields;
-            ViewBag.Fields = fields;
+            ViewBag.Purchase = hui;
+            return View();
+        }
+
+        [HttpPost]
+        [Route("Purchase/CreatePurchase/{id?}")]
+        public IActionResult CreatePurchase( Field[] fields)
+        {
+            //if (id == null) return RedirectToAction("Index");
+            //var zalupa = db.Fields.ToList();
+            //var hui = db.Purchases.Where(p => p.PurchaseId == id).FirstOrDefault();
+            //List<Field> fields = hui.Fields;
+            //ViewBag.Fields = fields;
             return View();
         }
     }

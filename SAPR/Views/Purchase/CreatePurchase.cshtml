@@ -1,4 +1,4 @@
-﻿@{ ViewData["Title"] = @ViewBag.Name; }
+﻿@{ ViewData["Title"] = "Составление заявки";}
 
 <!DOCTYPE html>
 <html>
@@ -9,16 +9,22 @@
         <h3>Форма оформления Заявки</h3>
         <p>Для оформления заявки заполните следующие поля:</p>
         <form method="post" class=" = " needs-validation">
-            <div class="row g-3">
-                @foreach (var field in ViewBag.Fields)
+            <div class="row g-3 p-3">
+                @for (int i = 0; i< ViewBag.Purchase.Fields.Count; i++)
                 {
-                    <div class="col-sm-6">
-                        <label for="firstName" class="form-label">@field.Name</label>
-                        <input type="text" class="form-control" id="@field.Alias" placeholder="" value="@field.DefaultValue" required="">
-                        <div class="invalid-feedback">
-                            Valid first name is required.
-                        </div>
+                <div class="col-sm-6">
+                    <label for="firstName" name="fields[i].name" class="form-label">@ViewBag.Purchase.Fields[i].Name</label>
+                    <input type="text" name="fields[i].value" class="form-control" placeholder="" value="@ViewBag.Purchase.Fields[i].DefaultValue" required="">
+
+                    <div hidden="true">
+                        <input type="number" name="fields[i].alias" value="@ViewBag.Purchase.Fields[i].Alias" /><br />
+                        <input type="number" name="fields[i].purchaseId" value="@ViewBag.Purchase.PurchaseId" /><br />
                     </div>
+
+                    <div class="invalid-feedback">
+                        Valid first name is required.
+                    </div>
+                </div>
                 }
             </div>
             <button type="submit" class="btn btn-primary">Сохранить</button>
@@ -26,3 +32,14 @@
     </div>
 </body>
 </html>
+
+@functions{
+        Field[] Field { get; set; } = { };
+
+        public void OnPost(Field[] field)
+        {
+            Field = field;
+        }
+
+        public record class Field(string Name, string Alias, string DefaultValue, int PurchaseId);
+}
