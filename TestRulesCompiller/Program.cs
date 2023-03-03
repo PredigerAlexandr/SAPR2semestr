@@ -26,7 +26,7 @@ namespace TestRulesCompiler
                 var beforeRulesTree = RuleCompiller.RuleCompiller.BuildRulesTree(beforeRulesXML, fields, codeTreeHandlerBeforeRules);
                 var afterRulesTree = RuleCompiller.RuleCompiller.BuildRulesTree(afterRulesXML, fields, codeTreeHandlerAfterRules);
 
-                string code = RulesCodeBuilder.BuildValidationClass(beforeRulesTree, afterRulesTree, "GeneratedValidator", 11);
+                string code = RulesCodeBuilder.BuildValidationClass(beforeRulesTree, afterRulesTree, "GeneratedValidator", 1);
                 File.WriteAllText(@"C:\Users\Alexandr\Desktop\_\6 семестр УлГТУ ИВТ\САПР\RuleCompiller\code.cs", code, Encoding.Default);
             }
             else
