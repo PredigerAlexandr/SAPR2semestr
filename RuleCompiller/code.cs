@@ -6,9 +6,9 @@ namespace SAPR.RuleCompiller
 {
     public class GeneratedValidator 
     {
-        public static string BeforeCheck()
+        public static string BeforeValidation()
         {
-            var validationData = new ValidationData(ValidationType.before, new string [] {"SNILS"}, 11, 9549);
+            var validationData = new ValidationData(ValidationType.before, new string [] {"SNILS"}, 1);
             List<string> violations = new List<string>();
             if(!string.IsNullOrEmpty(validationData["SNILS"]))
             {
@@ -26,9 +26,9 @@ namespace SAPR.RuleCompiller
             }
             return "";
         }
-        public static string AfterChack(string xmlData)
+        public static string AfterValidation(string xmlData)
         {
-            var validationData = new ValidationData(ValidationType.after, new string [] {"PhoneNumber"}, 11, 9549, xmlData);
+            var validationData = new ValidationData(ValidationType.after, new string [] {"PhoneNumber"}, 11, xmlData);
             List<string> violations = new List<string>();
             if(string.IsNullOrEmpty(validationData["PhoneNumber"]) && string.IsNullOrWhiteSpace(validationData["PhoneNumber"]))
             {

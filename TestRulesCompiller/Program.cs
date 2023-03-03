@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using RuleCompiller;
+using SAPR.RuleCompiller;
 
 namespace TestRulesCompiler
 {
@@ -12,7 +13,7 @@ namespace TestRulesCompiler
         {
             string xmlText = "<NumberPhone>8902<NumberPhone><SNILS><SNILS>";
 
-            if (true)//IsBuild
+            if (false)//IsBuild
             {
                 var fields = RuleCompiller.RuleCompiller.GetSimpleDocumentShema(1);
                 //var postFields = RuleCompiller.RuleCompiller.GetSimpleDocumentShema(11, 9549, xmlText);
@@ -25,14 +26,14 @@ namespace TestRulesCompiler
                 var beforeRulesTree = RuleCompiller.RuleCompiller.BuildRulesTree(beforeRulesXML, fields, codeTreeHandlerBeforeRules);
                 var afterRulesTree = RuleCompiller.RuleCompiller.BuildRulesTree(afterRulesXML, fields, codeTreeHandlerAfterRules);
 
-                string code = RulesCodeBuilder.BuildValidationClass(beforeRulesTree, afterRulesTree, "GeneratedValidator", 11, 9549);
+                string code = RulesCodeBuilder.BuildValidationClass(beforeRulesTree, afterRulesTree, "GeneratedValidator", 11);
                 File.WriteAllText(@"C:\Users\Alexandr\Desktop\_\6 семестр УлГТУ ИВТ\САПР\RuleCompiller\code.cs", code, Encoding.Default);
             }
             else
             {
-                //GeneratedValidator validator = new GeneratedValidator();
-                //List<string> resultBefore = validator.BeforeValidation();
-                //List<string> resultAfter = validator.AfterValidation(xmlText);
+                
+                string resultBefore = GeneratedValidator.BeforeValidation();
+                string resultAfter = GeneratedValidator.AfterValidation(xmlText);
             }
         }
     }

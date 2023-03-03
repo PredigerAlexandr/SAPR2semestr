@@ -12,51 +12,56 @@ namespace RuleCompiller
     public class ValidationData
     {
         protected XElement rootElement;
-        private const string connectionString = "Data Source=TE-DB;Initial Catalog=UTP_TEST;User ID=utpProtoUser;Password=w1v4MdYK8z;";
+        private const string connectionString = "Server=(localdb)\\mssqllocaldb;Database=mobilestoredb;Trusted_Connection=True;MultipleActiveResultSets=true";
         internal Dictionary<string, FieldInfo> fieldsInfo = new Dictionary<string, FieldInfo>();
 
 
         public ValidationData(ValidationType type, string[] checkFields, long purchaseId, string rootXml = null)
         {
+
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                using (SqlCommand command = new SqlCommand("GetSimpleDocumentObjects", connection))
+                using (
+                    SqlCommand command = new SqlCommand(
+                        "Select * from Fields " +
+                        "Where PurchaseId = @purchaseId",
+                        connection
+                    )
+                )
                 {
-                    command.CommandType = System.Data.CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@tradeSectionId", tradeSectionId);
-                    command.Parameters.AddWithValue("@modelId", modelId);
-
-
+                    command.CommandType = System.Data.CommandType.Text;
+                    command.Parameters.AddWithValue("@purchaseId", purchaseId);
 
                     var reader = command.ExecuteReader();
 
                     while (reader.Read())
                     {
-                        string currentFieldName = (string)reader["Name"];
-                        if (checkFields.Contains(currentFieldName))
+                        string currentAliasName = (string)reader["Alias"];
+                        if (checkFields.Contains(currentAliasName))
                         {
-                            var name = currentFieldName;
-                            var path = (string)(reader["ValuePath"] is not string ? "" : reader["ValuePath"]);
-                            var isComputed = (bool)(reader["isComputed"] is not bool ? false : reader["isComputed"]);
+                            var alias = currentAliasName;
                             var value = (string)((reader["DefaultValue"] is not string) ? "" : reader["DefaultValue"]);
-                            var dataType = (string)reader["DataTypeId"];
+                            var name = (string)(reader["Name"] is not string ? "" : reader["Name"]);
+
 
                             fieldsInfo.Add(
-                            currentFieldName,
+                            currentAliasName,
                             new FieldInfo()
                             {
-                                name = currentFieldName,
-                                path = path,
-                                isComputed = isComputed,
+                               alias = currentAliasName,
                                 value = value,
-                                DataType = dataType
+                                name = name
                             }
-                        );
+                            );
                         }
                     }
                 }
             }
+
+
+
+
             //TODO: получение с бд всех полей т.е заменяем fieldsInfo вместо него будет массив необхидимых строк
             this.fieldsInfo = fieldsInfo;
             switch (type)
@@ -92,23 +97,23 @@ namespace RuleCompiller
             fieldsInfo.TryGetValue(name, out FieldInfo currentFieldInfo);
             if (currentFieldInfo == null) throw new ApplicationException($"Не удалось получить значение свойства '{name}'"); //TODO: запилить спец исключения?
 
-            if (currentFieldInfo.isComputed)
-            {
-                var node = rootElement.XPathEvaluate(currentFieldInfo.path) == null ? rootElement.XPathEvaluate(currentFieldInfo.path.ToLower()) : rootElement.XPathEvaluate(currentFieldInfo.path);
-                if (node != null) return node.ToString();
-            }
-            else
-            {
-                XElement value = rootElement.XPathSelectElement(currentFieldInfo.path) == null ? rootElement.XPathSelectElement(currentFieldInfo.path.ToLower()) : rootElement.XPathSelectElement(currentFieldInfo.path);
-                if (value != null)
-                {
-                    using (var reader = value.CreateReader())
-                    {
-                        reader.MoveToContent();
-                        return reader.ReadInnerXml();
-                    }
-                }
-            }
+            //if (currentFieldInfo.isComputed)
+            //{
+            //    var node = rootElement.XPathEvaluate(currentFieldInfo.path) == null ? rootElement.XPathEvaluate(currentFieldInfo.path.ToLower()) : rootElement.XPathEvaluate(currentFieldInfo.path);
+            //    if (node != null) return node.ToString();
+            //}
+            //else
+            //{
+            //    XElement value = rootElement.XPathSelectElement(currentFieldInfo.path) == null ? rootElement.XPathSelectElement(currentFieldInfo.path.ToLower()) : rootElement.XPathSelectElement(currentFieldInfo.path);
+            //    if (value != null)
+            //    {
+            //        using (var reader = value.CreateReader())
+            //        {
+            //            reader.MoveToContent();
+            //            return reader.ReadInnerXml();
+            //        }
+            //    }
+            //}
 
             return null;
         }
@@ -123,25 +128,17 @@ namespace RuleCompiller
             }
         }
 
-        public string GetFieldType(string fieldName)
-        {
-            return fieldsInfo[fieldName].DataType.ToLower();
-        }
+        //public string GetFieldType(string fieldName)
+        //{
+        //    return fieldsInfo[fieldName].DataType.ToLower();
+        //}
     }
 
     public class FieldInfo
     {
         public string name;
-        public string path;
-        public bool isComputed;
+        public string alias;
         public string value;
-        private string dataType;
-
-        public string DataType
-        {
-            get { return value.ToLower(); }
-            set { dataType = value; }
-        }
     }
 
     public enum ValidationType

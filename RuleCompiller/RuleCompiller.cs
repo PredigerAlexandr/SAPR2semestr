@@ -113,13 +113,6 @@ namespace RuleCompiller
                             result.Add(rule);
                             break;
                         }
-                    case "business": //sql и лямбда выражения
-                        {
-                            var rule = BusinessRule.Parse(xRule, codeTreeHandler);
-                            result.Add(rule);
-                            var tmp = rule.Match(new ValidationData(ValidationType.before, new string[] { "Amount" }, 11, 9549));
-                            break;
-                        }
                     case "validation":
                         {
                             var rule = ValidationRule.Parse(xRule, fields, codeTreeHandler);

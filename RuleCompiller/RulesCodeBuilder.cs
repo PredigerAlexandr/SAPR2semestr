@@ -18,7 +18,7 @@ namespace RuleCompiller
         }
 
         public static string BuildValidationClass(RuleComposite beforeValidationRoot, RuleComposite afterValidationRoot,
-            string className, int tradeSectionId, long modelId)
+            string className, int purchaseId)
         {
             List<string> beforeUsingProperties = new List<string>();
             List<string> afterUsingProperties = new List<string>();
@@ -38,14 +38,14 @@ namespace RuleCompiller
             if (beforeValidationRoot != null)
             {
                 codeText.Append("public static string BeforeCheck");
-                codeText.Append(BuildValidationFunctionBodyWithArgsFromRulesTree(ValidationType.before, beforeValidationRoot, beforeUsingProperties, tradeSectionId, modelId));
+                codeText.Append(BuildValidationFunctionBodyWithArgsFromRulesTree(ValidationType.before, beforeValidationRoot, purchaseId));
             }
 
             if (afterValidationRoot != null)
             {
                 //BuildAfterValidation
                 codeText.Append("public static string AfterChack");
-                codeText.Append(BuildValidationFunctionBodyWithArgsFromRulesTree(ValidationType.after, afterValidationRoot, afterUsingProperties, tradeSectionId, modelId));
+                codeText.Append(BuildValidationFunctionBodyWithArgsFromRulesTree(ValidationType.after, afterValidationRoot, purchaseId));
 
             }
 
@@ -68,8 +68,7 @@ namespace RuleCompiller
         const string XML_VALUE_PREFIX = "value:";
         const string XML_FIELD_PREFIX = "field:";
 
-        public static StringBuilder BuildValidationFunctionBodyWithArgsFromRulesTree(ValidationType type, RuleComposite ruleComposite, List<string> usingProperties,
-            long tradeSectionId, long modelId)
+        public static StringBuilder BuildValidationFunctionBodyWithArgsFromRulesTree(ValidationType type, RuleComposite ruleComposite, int purchaseId)
         {
             CodeTreeHandler codeTreeHandler = ruleComposite.codeTreeHandler;
             StringBuilder codeText = new StringBuilder("");
@@ -106,14 +105,14 @@ namespace RuleCompiller
                     codeText.Insert(0,
                         "(){" +
                         $"var " + codeTreeHandler.validationDataVariableName + $" = new ValidationData(ValidationType.before, new string [] {{{properties.ToString()}}}, " +
-                        $"{tradeSectionId}, {modelId});"
+                        $"{purchaseId});"
                     );
                     break;
                 case ValidationType.after:
                     codeText.Insert(0,
                         "(string " + codeTreeHandler.xmlDataParameterName + "){" +
                         $"var " + codeTreeHandler.validationDataVariableName + $" = new ValidationData(ValidationType.after, new string [] {{{properties.ToString()}}}, " +
-                        $"{tradeSectionId}, {modelId}, " + codeTreeHandler.xmlDataParameterName + ");"
+                        $"{purchaseId}, " + codeTreeHandler.xmlDataParameterName + ");"
                     );
                     break;
             }
