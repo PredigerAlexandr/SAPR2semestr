@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace SAPR.Models
 {
-    public class DataBaseContext:DbContext
+    public class DataBaseContext : DbContext
     {
         public DbSet<Rule> Rules { get; set; }
         public DbSet<Field> Fields { get; set; }
-        public DbSet<Purchase> Purchases  { get; set; }
+        public DbSet<Purchase> Purchases { get; set; }
+        public DbSet<ExecutableСode> ExecutableСodes { get; set; }
 
 
         public DataBaseContext(DbContextOptions<DataBaseContext> options)

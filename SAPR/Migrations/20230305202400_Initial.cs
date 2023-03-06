@@ -7,6 +7,19 @@ namespace SAPR.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "ExecutableСodes",
+                columns: table => new
+                {
+                    ExecutableСodeId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Code = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExecutableСodes", x => x.ExecutableСodeId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Rules",
                 columns: table => new
                 {
@@ -29,11 +42,18 @@ namespace SAPR.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     BeforeRuleRuleId = table.Column<long>(type: "bigint", nullable: true),
-                    AfterRuleRuleId = table.Column<long>(type: "bigint", nullable: true)
+                    AfterRuleRuleId = table.Column<long>(type: "bigint", nullable: true),
+                    GeneratedCodeExecutableСodeId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Purchases", x => x.PurchaseId);
+                    table.ForeignKey(
+                        name: "FK_Purchases_ExecutableСodes_GeneratedCodeExecutableСodeId",
+                        column: x => x.GeneratedCodeExecutableСodeId,
+                        principalTable: "ExecutableСodes",
+                        principalColumn: "ExecutableСodeId",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Purchases_Rules_AfterRuleRuleId",
                         column: x => x.AfterRuleRuleId,
@@ -57,6 +77,7 @@ namespace SAPR.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Alias = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DefaultValue = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PurchaseId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -84,6 +105,11 @@ namespace SAPR.Migrations
                 name: "IX_Purchases_BeforeRuleRuleId",
                 table: "Purchases",
                 column: "BeforeRuleRuleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Purchases_GeneratedCodeExecutableСodeId",
+                table: "Purchases",
+                column: "GeneratedCodeExecutableСodeId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -93,6 +119,9 @@ namespace SAPR.Migrations
 
             migrationBuilder.DropTable(
                 name: "Purchases");
+
+            migrationBuilder.DropTable(
+                name: "ExecutableСodes");
 
             migrationBuilder.DropTable(
                 name: "Rules");

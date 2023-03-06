@@ -19,6 +19,21 @@ namespace SAPR.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.0");
 
+            modelBuilder.Entity("SAPR.Models.ExecutableСode", b =>
+                {
+                    b.Property<int>("ExecutableСodeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ExecutableСodeId");
+
+                    b.ToTable("ExecutableСodes");
+                });
+
             modelBuilder.Entity("SAPR.Models.Field", b =>
                 {
                     b.Property<int>("FieldId")
@@ -37,6 +52,9 @@ namespace SAPR.Migrations
 
                     b.Property<int?>("PurchaseId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("FieldId");
 
@@ -58,6 +76,9 @@ namespace SAPR.Migrations
                     b.Property<long?>("BeforeRuleRuleId")
                         .HasColumnType("bigint");
 
+                    b.Property<int?>("GeneratedCodeExecutableСodeId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -66,6 +87,8 @@ namespace SAPR.Migrations
                     b.HasIndex("AfterRuleRuleId");
 
                     b.HasIndex("BeforeRuleRuleId");
+
+                    b.HasIndex("GeneratedCodeExecutableСodeId");
 
                     b.ToTable("Purchases");
                 });
@@ -108,9 +131,15 @@ namespace SAPR.Migrations
                         .WithMany()
                         .HasForeignKey("BeforeRuleRuleId");
 
+                    b.HasOne("SAPR.Models.ExecutableСode", "GeneratedCode")
+                        .WithMany()
+                        .HasForeignKey("GeneratedCodeExecutableСodeId");
+
                     b.Navigation("AfterRule");
 
                     b.Navigation("BeforeRule");
+
+                    b.Navigation("GeneratedCode");
                 });
 
             modelBuilder.Entity("SAPR.Models.Purchase", b =>

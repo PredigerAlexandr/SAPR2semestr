@@ -10,21 +10,20 @@
         <p>Для оформления заявки заполните следующие поля:</p>
         <form method="post" class=" = " needs-validation">
             <div class="row g-3 p-3">
-                @for (int i = 0; i< ViewBag.Purchase.Fields.Count; i++)
+                @for (int i = 0; i < ViewBag.Purchase.Fields.Count; i++)
                 {
-                <div class="col-sm-6">
-                    <label for="firstName" name="fields[i].name" class="form-label">@ViewBag.Purchase.Fields[i].Name</label>
-                    <input type="text" name="fields[i].value" class="form-control" placeholder="" value="@ViewBag.Purchase.Fields[i].DefaultValue" required="">
+                    <div class="col-sm-6">
+                        <label class="form-label">@ViewBag.Purchase.Fields[i].Name</label>
+                        <input name="fields[@i].DefaultValue" class="form-control" value="@ViewBag.Purchase.Fields[i].DefaultValue">
 
-                    <div hidden="true">
-                        <input type="number" name="fields[i].alias" value="@ViewBag.Purchase.Fields[i].Alias" /><br />
-                        <input type="number" name="fields[i].purchaseId" value="@ViewBag.Purchase.PurchaseId" /><br />
-                    </div>
+                        <div hidden="true">
+                            <input name="fields[@i].Name" value="@ViewBag.Purchase.Fields[i].Name" /><br />
+                            <input name="fields[@i].Alias" value="@ViewBag.Purchase.Fields[i].Alias" /><br />
+                            <input name="fields[@i].FieldId" value="@ViewBag.Purchase.Fields[i].FieldId" /><br />
+                        </div>
 
-                    <div class="invalid-feedback">
-                        Valid first name is required.
+
                     </div>
-                </div>
                 }
             </div>
             <button type="submit" class="btn btn-primary">Сохранить</button>
@@ -33,13 +32,18 @@
 </body>
 </html>
 
-@functions{
-        Field[] Field { get; set; } = { };
+@*@functions{
+        Field[] Fields { get; set; } = { };
 
-        public void OnPost(Field[] field)
+        public void OnPost(Field[] fields)
         {
-            Field = field;
+            Fields = fields;
         }
 
-        public record class Field(string Name, string Alias, string DefaultValue, int PurchaseId);
-}
+        public class Field{
+            string Name;
+            string Alias;
+            string DefaultValue;
+            int PurchaseId;
+        }
+    }*@

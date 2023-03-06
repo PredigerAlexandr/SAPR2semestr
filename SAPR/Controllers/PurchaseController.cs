@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using SAPR.Models;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace SAPR.Controllers
 {
@@ -39,14 +41,28 @@ namespace SAPR.Controllers
 
         [HttpPost]
         [Route("Purchase/CreatePurchase/{id?}")]
-        public IActionResult CreatePurchase( Field[] fields)
+        public IActionResult CreatePurchase(Field[] fields)
         {
-            //if (id == null) return RedirectToAction("Index");
-            //var zalupa = db.Fields.ToList();
-            //var hui = db.Purchases.Where(p => p.PurchaseId == id).FirstOrDefault();
-            //List<Field> fields = hui.Fields;
-            //ViewBag.Fields = fields;
+            XDocument fieldsXml = new XDocument();
+            XElement fieldsInfo = new XElement("root");
+            foreach (Field field in fields)
+            {
+                fieldsInfo.Add(new XElement(field.Alias, field.DefaultValue));
+            }
+            fieldsXml.Add(fieldsInfo);
+
             return View();
+        }
+
+        [IgnoreAntiforgeryToken]
+        public class CreatePurchaseModel : PageModel
+        {
+            public Field[] Fields { get; private set; } = Array.Empty<Field>();
+
+            public void OnPost(Field[] fields)
+            {
+                Fields = fields;
+            }
         }
     }
 }
