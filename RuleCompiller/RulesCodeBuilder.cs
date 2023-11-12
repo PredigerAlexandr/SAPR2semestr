@@ -30,7 +30,7 @@ namespace RuleCompiller
                 "using System.Collections.Generic;" +
 
 
-                "namespace SAPR.RuleCompiller {" +
+                "namespace RuleCompiller {" +
                 "public class " + className + " {"
             );
 
@@ -44,7 +44,7 @@ namespace RuleCompiller
             if (afterValidationRoot != null)
             {
                 //BuildAfterValidation
-                codeText.Append("public static string AfterChack");
+                codeText.Append("public static string AfterCheck");
                 codeText.Append(BuildValidationFunctionBodyWithArgsFromRulesTree(ValidationType.after, afterValidationRoot, purchaseId));
 
             }
@@ -110,7 +110,8 @@ namespace RuleCompiller
                     break;
                 case ValidationType.after:
                     codeText.Insert(0,
-                        "(string " + codeTreeHandler.xmlDataParameterName + "){" +
+                        "(object xmlObject){" +
+                        "string " + codeTreeHandler.xmlDataParameterName + "= xmlObject.ToString();" +
                         $"var " + codeTreeHandler.validationDataVariableName + $" = new ValidationData(ValidationType.after, new string [] {{{properties.ToString()}}}, " +
                         $"{purchaseId}, " + codeTreeHandler.xmlDataParameterName + ");"
                     );

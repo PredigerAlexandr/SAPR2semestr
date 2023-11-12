@@ -14,7 +14,7 @@
                 {
                     <div class="col-sm-6">
                         <label class="form-label">@ViewBag.Purchase.Fields[i].Name</label>
-                        <input name="fields[@i].DefaultValue" class="form-control" value="@ViewBag.Purchase.Fields[i].DefaultValue">
+                        <input name="fields[@i].Value" class="form-control" value="@ViewBag.Purchase.Fields[i].DefaultValue">
 
                         <div hidden="true">
                             <input name="fields[@i].Name" value="@ViewBag.Purchase.Fields[i].Name" /><br />
@@ -26,24 +26,11 @@
                     </div>
                 }
             </div>
+            <div hidden="true">
+                <input name="purchaseId" value="@ViewBag.Purchase.PurchaseId" /><br />
+            </div>
             <button type="submit" class="btn btn-primary">Сохранить</button>
         </form>
     </div>
 </body>
 </html>
-
-@*@functions{
-        Field[] Fields { get; set; } = { };
-
-        public void OnPost(Field[] fields)
-        {
-            Fields = fields;
-        }
-
-        public class Field{
-            string Name;
-            string Alias;
-            string DefaultValue;
-            int PurchaseId;
-        }
-    }*@

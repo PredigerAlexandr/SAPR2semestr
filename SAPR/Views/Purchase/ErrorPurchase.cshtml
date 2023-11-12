@@ -1,0 +1,38 @@
+﻿@{ ViewData["Title"] = "Составление заявки";}
+
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+    <div>
+        <div class="row justify-content-center list-group">
+            <h2>К сожалению, заявка не прошла проверку!</h2><br />
+            <h3>Список оишбок:</h3><br>
+        </div>
+        <div class="row justify-content-start list-group">
+            @foreach (var error in ViewBag.ErrorsList)
+            {
+                <div class="d-flex pt-3">
+                    <svg class="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#007bff"></rect><text x="50%" y="50%" fill="#007bff" dy=".3em">32x32</text></svg>
+
+                    <p class="pb-1 pl-2 mb-0 lh-sm border-bottom">
+                        @error <br>
+                    </p>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="row py-lg-5">
+            <div class="mx-auto">
+                <p>
+                    <a href="/Purchase/Index" class="btn btn-primary my-2">На главную</a>
+                    <a href="/Purchase/CreatePurchase/@ViewBag.Purchase.PurchaseId" class="btn btn-secondary my-2">Редактировать</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

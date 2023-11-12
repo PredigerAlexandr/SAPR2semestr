@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using RuleCompiller;
-using SAPR.RuleCompiller;
+using RuleCompiller;
 
 namespace TestRulesCompiler
 {
@@ -32,8 +32,8 @@ namespace TestRulesCompiler
             else
             {
                 
-                string resultBefore = GeneratedValidator.BeforeValidation();
-                string resultAfter = GeneratedValidator.AfterValidation(xmlText);
+                //string resultBefore = GeneratedValidator.BeforeValidation();
+               // string resultAfter = GeneratedValidator.AfterValidation(xmlText);
             }
         }
     }

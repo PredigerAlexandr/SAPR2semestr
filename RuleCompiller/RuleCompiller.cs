@@ -93,6 +93,7 @@ namespace RuleCompiller
         public static RuleComposite BuildRulesTree(string ruleExpression, List<DocumentSchema> fields, CodeTreeHandler codeTreeHandler, ICustomRuleFactory ruleFactory = null)
         {
             //LogHelper.Logger.DebugFormat("RuleComposite ParseRulesFromXml {0}", ruleFactory == null ? "Null" : ruleFactory.GetType().ToString());
+            if (string.IsNullOrEmpty(ruleExpression)) return null;
             var ruleXml = XElement.Parse(ruleExpression);
             if (ruleXml == null) return null;
 

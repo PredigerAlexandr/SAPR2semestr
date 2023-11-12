@@ -13,16 +13,16 @@
     <form method="post" action="~/Admin/AdminRules">
         <div class="form-group">
             <label for="exampleFormControlTextarea1">Правила типа "До"</label>
-            <textarea type="string" name="beforeRuleText" class="form-control" rows="3" >@(Model.BeforeRule is null ? "" : Model.BeforeRule.RuleText)</textarea>
+            <textarea type="string" style="height: 300px;" name="beforeRuleText" class="form-control" rows="3">@(Model.BeforeRule is null ? "" : Model.BeforeRule.RuleText)</textarea>
         </div>
 
         <div class="form-group">
             <label for="exampleFormControlTextarea1">Правила типа "После"</label>
-            <textarea type="string" name="afterRuleText" class="form-control" rows="3">@(Model.AfterRule is null ? "" : Model.AfterRule.RuleText)</textarea>
+            <textarea type="string" style="height: 300px;" name="afterRuleText" class="form-control" rows="3">@(Model.AfterRule is null ? "" : Model.AfterRule.RuleText)</textarea>
         </div>
 
-        <div hidden="true" @*class="form-group"*@>
-            <input type="number" name="purchaseId" @*hidden="true"*@ @*class="form-control"*@ value="@Model.PurchaseId"/><br />
+        <div hidden="true" >
+            <input type="number" name="purchaseId" value="@Model.PurchaseId"/><br />
         </div>
 
         <button type="submit" class="btn btn-primary">Сохранить</button>

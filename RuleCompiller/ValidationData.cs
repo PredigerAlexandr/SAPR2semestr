@@ -49,7 +49,7 @@ namespace RuleCompiller
                             currentAliasName,
                             new FieldInfo()
                             {
-                               alias = currentAliasName,
+                                alias = currentAliasName,
                                 value = value,
                                 name = name
                             }
@@ -88,32 +88,26 @@ namespace RuleCompiller
         protected string GetBeforeValue(string name)
         {
             fieldsInfo.TryGetValue(name, out FieldInfo currentFieldInfo);
-            if (currentFieldInfo == null) throw new ApplicationException($"Не удалось получить значение свойства '{name}'");
+            if (currentFieldInfo == null) return"";
             return currentFieldInfo.value;
         }
 
         protected string GetAfterValue(string name)
         {
             fieldsInfo.TryGetValue(name, out FieldInfo currentFieldInfo);
-            if (currentFieldInfo == null) throw new ApplicationException($"Не удалось получить значение свойства '{name}'"); //TODO: запилить спец исключения?
+            //if (currentFieldInfo == null) throw new ApplicationException($"Не удалось получить значение свойства '{name}'"); //TODO: запилить спец исключения?
 
-            //if (currentFieldInfo.isComputed)
-            //{
-            //    var node = rootElement.XPathEvaluate(currentFieldInfo.path) == null ? rootElement.XPathEvaluate(currentFieldInfo.path.ToLower()) : rootElement.XPathEvaluate(currentFieldInfo.path);
-            //    if (node != null) return node.ToString();
-            //}
-            //else
-            //{
-            //    XElement value = rootElement.XPathSelectElement(currentFieldInfo.path) == null ? rootElement.XPathSelectElement(currentFieldInfo.path.ToLower()) : rootElement.XPathSelectElement(currentFieldInfo.path);
-            //    if (value != null)
-            //    {
-            //        using (var reader = value.CreateReader())
-            //        {
-            //            reader.MoveToContent();
-            //            return reader.ReadInnerXml();
-            //        }
-            //    }
-            //}
+            XElement value = rootElement.XPathSelectElement(currentFieldInfo.alias) == null ? rootElement.XPathSelectElement(currentFieldInfo.alias.ToLower()) : rootElement.XPathSelectElement(currentFieldInfo.alias);
+            //XDocument doc = new XDocument(value);
+            if (value != null)
+            {
+                using (var reader = value.CreateReader())
+                {
+                    reader.MoveToContent();
+                    return reader.ReadInnerXml();
+                }
+            }
+
 
             return null;
         }
@@ -127,11 +121,6 @@ namespace RuleCompiller
                 return GetValue(key);
             }
         }
-
-        //public string GetFieldType(string fieldName)
-        //{
-        //    return fieldsInfo[fieldName].DataType.ToLower();
-        //}
     }
 
     public class FieldInfo

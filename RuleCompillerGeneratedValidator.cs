@@ -2,18 +2,14 @@ using RuleCompiller;
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-namespace SAPR.RuleCompiller 
+namespace RuleCompiller 
 {
     public class GeneratedValidator 
     {
-        public static string BeforeValidation()
+        public static string BeforeCheck()
         {
-            var validationData = new ValidationData(ValidationType.before, new string [] {"SNILS"}, 1);
+            var validationData = new ValidationData(ValidationType.before, new string [] {}, 1);
             List<string> violations = new List<string>();
-            if(!string.IsNullOrEmpty(validationData["SNILS"]))
-            {
-                violations.Add("Номер процедуры надо          оставить пустым");
-            }
             if(violations.Count > 0)
             {
                 string errors = "<Errors>";
@@ -26,13 +22,14 @@ namespace SAPR.RuleCompiller
             }
             return "";
         }
-        public static string AfterValidation(string xmlData)
+        public static string AfterCheck(object xmlObject)
         {
-            var validationData = new ValidationData(ValidationType.after, new string [] {"PhoneNumber"}, 11, xmlData);
+            string xmlData= xmlObject.ToString();
+            var validationData = new ValidationData(ValidationType.after, new string [] {"Name"}, 1, xmlData);
             List<string> violations = new List<string>();
-            if(string.IsNullOrEmpty(validationData["PhoneNumber"]) && string.IsNullOrWhiteSpace(validationData["PhoneNumber"]))
+            if(string.IsNullOrEmpty(validationData["Name"]) && string.IsNullOrWhiteSpace(validationData["Name"]))
             {
-                violations.Add("Свойство \"PhoneNumber\" обязательно для заполнения.");
+                violations.Add("Свойство \"Name\" обязательно для заполнения.");
             }
             if(violations.Count > 0)
             {
