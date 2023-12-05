@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 //using RuleCompiller;
 using SAPR.Models;
+using SAPR.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +13,12 @@ namespace SAPR.Controllers
 {
     public class AdminController : Controller
     {
-
-        DataBaseContext db;
-        public AdminController(DataBaseContext context)
+        private readonly DataBaseContext db;
+        private readonly AppOptions _appOptions;
+        public AdminController(DataBaseContext context, IOptions<AppOptions> appOptions)
         {
             db = context;
+            _appOptions = appOptions.Value;
         }
 
         [Route("Admin/AdminRules/{id?}")]
@@ -64,7 +67,8 @@ namespace SAPR.Controllers
 
             db.SaveChanges();
 
-            Assembly asm = Assembly.LoadFrom(@"C:\Users\predi\OneDrive\Рабочий стол\бекап от 28.08.2023\_\6 семестр УлГТУ ИВТ\САПР\SAPR\bin\Debug\net5.0\RuleCompiller.dll");
+            var pathToDll = @$"{AppDomain.CurrentDomain.BaseDirectory}\RuleCompiller.dll";
+            Assembly asm = Assembly.LoadFrom(pathToDll);
             Type? t = asm.GetType("RuleCompiller.GeneratedCodeHandler");
             MethodInfo? square = t.GetMethod("GeneratedCode");
             object? result = square?.Invoke(null, new object[] { purchase.PurchaseId });
@@ -90,12 +94,11 @@ namespace SAPR.Controllers
             return Redirect("~/Admin/AdminIndex");
         }
 
-
-
         [HttpGet]
         public IActionResult AdminIndex()
         {
             var tmp = db.Fields.ToList();
+            ViewData["mesForCert"] = System.IO.File.Exists($@"{AppDomain.CurrentDomain.BaseDirectory}\{_appOptions.Directories.Certificate}\server.pfx") ? "Существует" : "Отсутствует";
             return View(db.Purchases.ToList());
         }
     }

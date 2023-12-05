@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SAPR.Models;
+using SAPR.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,8 +27,12 @@ namespace SAPR
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            string connection = Configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<DataBaseContext>(options => options.UseSqlServer(connection));
+            services.AddOptions<AppOptions>()
+                .Bind(Configuration.GetSection("AppOptions"));
+            
+            services.AddDbContext<DataBaseContext>(options => options
+                .UseSqlServer(Configuration["AppOptions:ConnectionStrings:DefaultConnection"]));
+
             services.AddControllersWithViews();
         }
 
@@ -44,8 +50,9 @@ namespace SAPR
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
 
+            app.UseStaticFiles();
+            
             app.UseRouting();
 
             app.UseAuthorization();

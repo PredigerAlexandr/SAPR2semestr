@@ -1,11 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Builder.Extensions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 //using RuleCompiller;
 using SAPR.Models;
+using SAPR.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -18,10 +22,12 @@ namespace SAPR.Controllers
     public class PurchaseController : Controller
     {
         private readonly ILogger<PurchaseController> _logger;
+        private readonly AppOptions _appOptions;
 
         DataBaseContext db;
-        public PurchaseController(DataBaseContext context)
+        public PurchaseController(DataBaseContext context, IOptions<AppOptions> appOptions)
         {
+            _appOptions = appOptions.Value;
             db = context;
             if (db.Purchases.ToList().Count == 0)
             {
@@ -87,29 +93,22 @@ namespace SAPR.Controllers
             if (id == null) return RedirectToAction("Index");
             ViewBag.Purchase = purchase;
 
-            System.IO.File.WriteAllText(@"C:\Users\predi\OneDrive\Рабочий стол\бекап от 28.08.2023\_\6 семестр УлГТУ ИВТ\САПР\RuleCompillerGeneratedValidator.cs", purchase.GeneratedCode.Code, Encoding.Default);
+            if (!Directory.Exists($@"{AppDomain.CurrentDomain.BaseDirectory}\{_appOptions.Directories.GeneratedCode}"))
+            {
+                Directory.CreateDirectory(@$"{AppDomain.CurrentDomain.BaseDirectory}\{_appOptions.Directories.GeneratedCode}");
+            }
+
+            var pathGenerateCode = @$"{AppDomain.CurrentDomain.BaseDirectory}\{_appOptions.Directories.GeneratedCode}\RuleCompillerGeneratedValidator.cs";
+            System.IO.File.WriteAllText(pathGenerateCode, purchase.GeneratedCode.Code, Encoding.Default);
 
             string errors;
 
-            //var domain = AppDomain.CreateDomain(nameof(RuleCompiller.GeneratedValidator));
-            //try
-            //{
-            //    var loader = (Loader)domain.CreateInstanceAndUnwrap(typeof(RuleCompiller.GeneratedValidator).Assembly.FullName, typeof(Loader).FullName);
-            //    loader.Load(myFile);
-            //}
-            //finally
-            //{
-            //    AppDomain.Unload(domain);
-            //}
-
-            Assembly asm = Assembly.LoadFrom(@"C:\Users\predi\OneDrive\Рабочий стол\бекап от 28.08.2023\_\6 семестр УлГТУ ИВТ\САПР\SAPR\bin\Debug\net5.0\RuleCompiller.dll");
+            var pathToDll = @$"{AppDomain.CurrentDomain.BaseDirectory}\RuleCompiller.dll";
+            Assembly asm = Assembly.LoadFrom(pathToDll);
             Type? t = asm.GetType("RuleCompiller.GeneratedValidator");
             MethodInfo? square = t.GetMethod("BeforeCheck");
             object? result = square?.Invoke(null, new object[] { });
             errors = result.ToString();
-
-
-            //string errors = GeneratedValidator.BeforeCheck();
 
             if (string.IsNullOrEmpty(errors))
             {
@@ -156,9 +155,16 @@ namespace SAPR.Controllers
             var fieldsForView = db.Fields.ToList();
             Purchase purchase = db.Purchases.Where(p => p.PurchaseId == purchaseId).FirstOrDefault();
 
-            System.IO.File.WriteAllText(@"C:\Users\predi\OneDrive\Рабочий стол\бекап от 28.08.2023\_\6 семестр УлГТУ ИВТ\САПР\RuleCompillerGeneratedValidator.cs", purchase.GeneratedCode.Code, Encoding.Default);
+            if (!Directory.Exists($@"{AppDomain.CurrentDomain.BaseDirectory}\{_appOptions.Directories.GeneratedCode}"))
+            {
+                Directory.CreateDirectory(@$"{AppDomain.CurrentDomain.BaseDirectory}\{_appOptions.Directories.GeneratedCode}");
+            }
 
-            Assembly asm = Assembly.LoadFrom(@"C:\Users\predi\OneDrive\Рабочий стол\бекап от 28.08.2023\_\6 семестр УлГТУ ИВТ\САПР\RuleCompiller\bin\Debug\net5.0\RuleCompiller.dll");
+            var pathGenerateCode = @$"{AppDomain.CurrentDomain.BaseDirectory}\{_appOptions.Directories.GeneratedCode}\RuleCompillerGeneratedValidator.cs";
+            System.IO.File.WriteAllText(pathGenerateCode, purchase.GeneratedCode.Code, Encoding.Default);
+
+            var pathToDll = @$"{AppDomain.CurrentDomain.BaseDirectory}\RuleCompiller.dll";
+            Assembly asm = Assembly.LoadFrom(pathToDll);
             Type? t = asm.GetType("RuleCompiller.GeneratedValidator");
             MethodInfo? square = t.GetMethod("AfterCheck");
             object? result = square?.Invoke(null, new object[] { fieldsXml });
