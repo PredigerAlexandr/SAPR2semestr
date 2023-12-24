@@ -5,22 +5,36 @@
 
 <html>
 <head>
-    <title>Тестовое подписание</title>
+    <title>Подписание</title>
 </head>
-<body>
-    <h3>Тестовое подписание</h3>
-    <form method="post" enctype="multipart/form-data" action="~/Sign">
-        <div class="form-group">
-            <label>Файл с открытой частью</label>
-            <input type="file" name="file" />
-        </div>
-
-        <div class="form-group">
-            <label>Подписываемые данные</label>
-            <textarea type="string" style="height: 300px;" name="data" class="form-control" rows="3"></textarea>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Подписать</button>
-    </form>
+<body>  
+    <div>
+        <ul class="list-group">
+            <h3>Создание собственного сертификата</h3>
+            <a href="/Certificate" class="" aria-current="true">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Создайте ЭЦП на нашем сайте
+            </li>
+            </a>
+            <h3>Тестовое подписание</h3>
+            <a href="/Sign/Test" class="" aria-current="true">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Проверьте будет ли выполнено подписание документа вашим сертификатом
+                </li>
+             </a>
+            <h3>Проверка сертификата</h3>
+             <a href="/Sign/Check" class="" aria-current="true">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Проверьте каким сертификатом подписанны данные
+                </li>
+             </a>
+            <h3>Проверка подписаного документа</h3>
+            <a href="/Sign/Valid" class="" aria-current="true">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Проверьте содержимое xml файла
+                </li>
+            </a>
+        </ul>
+    </div>
 </body>
 </html>

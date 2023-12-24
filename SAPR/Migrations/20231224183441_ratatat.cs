@@ -2,7 +2,7 @@
 
 namespace SAPR.Migrations
 {
-    public partial class Initial : Migration
+    public partial class ratatat : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -32,6 +32,21 @@ namespace SAPR.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Rules", x => x.RuleId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SignerUsers",
+                columns: table => new
+                {
+                    SignerUserId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Sign = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    XmlDoc = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    subjectName = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SignerUsers", x => x.SignerUserId);
                 });
 
             migrationBuilder.CreateTable(
@@ -116,6 +131,9 @@ namespace SAPR.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Fields");
+
+            migrationBuilder.DropTable(
+                name: "SignerUsers");
 
             migrationBuilder.DropTable(
                 name: "Purchases");

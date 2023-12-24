@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Проверка подписаного документа";
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Проверка подписаного документа</title>
+</head>
+<body>
+    <h3>Проверка подписаного документа</h3>
+    <form method="post" enctype="multipart/form-data" action="~/Sign/Valid">
+        <div class="form-group">
+            <label>Файл с подписью</label>
+            <input type="file" name="fileWithSign" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Проверить</button>
+    </form>
+</body>
+</html>

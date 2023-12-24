@@ -5,23 +5,47 @@ using System.Security.Cryptography.X509Certificates;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Security.Cryptography.Xml;
+using System.Security.Cryptography;
+using System.Xml;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Text;
+using Microsoft.EntityFrameworkCore.Storage;
+using SAPR.Models;
+using SAPR.Utils;
+using Microsoft.Extensions.Options;
 
 namespace SAPR.Controllers
 {
     public class SignController : Controller
     {
-        // GET: SignController
+        private readonly DataBaseContext db;
+        private readonly AppOptions _appOptions;
+        public SignController(DataBaseContext context, IOptions<AppOptions> appOptions)
+        {
+            db = context;
+            _appOptions = appOptions.Value;
+        }
+
         public IActionResult Index()
         {
             return View();
         }
+        [Route("/Sign/Test")]
+        public IActionResult IndexTest()
+        {
+            return View("SignTest");
+        }
 
         [HttpPost]
         [Route("/Sign")]
-        public async Task<IActionResult> CreateCertificate(IFormFile file, string data)
+        public async Task<IActionResult> SignData(IFormFile file, string data)
         {
-
+            
+            var dataXml = @$"<data><attribute>{data}</attribute></data>";
             byte[] sign;
+            XmlDocument xml = new XmlDocument();
+            xml.LoadXml(dataXml);
 
             using (var memoryStream = new MemoryStream())
             {
@@ -45,18 +69,89 @@ namespace SAPR.Controllers
             //  Кодируем CMS/PKCS #7 подпись сообщения.
             var encodedSignature = signedCms.Encode();
 
-            if (VerifyMsg(dataByte, encodedSignature))
+            string signXml = System.Convert.ToBase64String(encodedSignature);
+
+            XmlElement signNode = xml.CreateElement("sign");
+            signNode.InnerText = signXml;
+            xml.DocumentElement.AppendChild(signNode);
+
+            MemoryStream xmlStream = new MemoryStream();
+            xml.Save(xmlStream);
+            xmlStream.Flush();//Adjust this if you want read your data 
+            xmlStream.Position = 0;
+            
+            db.SignerUsers.Add(new SignerUser
             {
-                //Console.WriteLine("\nСообщение проверено.");
-                var a = 1;
+                Sign = signXml,
+                XmlDoc = xml.OuterXml,
+                subjectName = signerCert.SubjectName.Name
+            });
+            db.SaveChanges();
+
+            return File(xmlStream, "application/octet-stream", @$"data.xml");
+        }
+
+        [Route("/Sign/Check")]
+        public IActionResult IndexCheck()
+        {
+            return View("SignCheck");
+        }
+
+        [HttpPost]
+        [Route("/Sign/Check")]
+        public async Task<IActionResult> SignCheck(IFormFile fileXml, IFormFile fileSign)
+        {
+
+            XmlDocument xmlData = new XmlDocument();
+            byte[] sign;
+
+            using (var memoryStream = new MemoryStream())
+            {
+                await fileXml.CopyToAsync(memoryStream);
+
+                xmlData.LoadXml(System.Text.Encoding.UTF8.GetString(memoryStream.ToArray()));
+            }
+
+            using (var memoryStream = new MemoryStream())
+            {
+                await fileSign.CopyToAsync(memoryStream);
+
+                sign = memoryStream.ToArray();
+            }
+
+            X509Certificate2 signerCert = new X509Certificate2(sign, (string)null);
+
+            var dataByte = System.Text.Encoding.ASCII.GetBytes(xmlData.SelectSingleNode("//attribute").InnerText);
+
+            ContentInfo contentInfo = new ContentInfo(dataByte);
+            SignedCms signedCms = new SignedCms(contentInfo, true);
+
+            CmsSigner cmsSigner = new CmsSigner(signerCert);
+
+            signedCms.ComputeSignature(cmsSigner);
+
+            var encodedSignature = signedCms.Encode();
+
+            string signNew = System.Convert.ToBase64String(encodedSignature);
+
+            string signInFile = xmlData.SelectSingleNode("//sign").InnerText;
+
+            bool flag = signNew == signInFile;
+
+            if (flag)
+            {
+                return View("AcceptCheck");
             }
             else
             {
-                //Console.WriteLine("\nОшибка при проверке сообщения.");
-                var b = 1;
+                return View("ErrorCheck");
             }
+        }
 
-            return View();
+        [Route("/Sign/Valid")]
+        public IActionResult IndexValid()
+        {
+            return View("SignValid");
         }
 
 
@@ -70,14 +165,9 @@ namespace SAPR.Controllers
             //  Создаем SignedCms для декодирования и проверки.
             SignedCms signedCms = new SignedCms(contentInfo, true);
 
-
-            //  Декодируем подпись
-            signedCms.Decode(encodedSignature);
-
-            //  Перехватываем криптографические исключения, для 
-            //  возврата о false значения при некорректности подписи.
             try
             {
+                signedCms.Decode(encodedSignature);
                 signedCms.CheckSignature(true);
             }
             catch (System.Security.Cryptography.CryptographicException e)
@@ -87,45 +177,36 @@ namespace SAPR.Controllers
 
             return true;
         }
+        
+        [HttpPost]
+        [Route("/Sign/Valid")]
+        public async Task<IActionResult> SignValid(IFormFile fileWithSign)
+        {
 
-        //static public X509Certificate2 GetSignerCert()
-        //{
-        //    //  Открываем хранилище My.
-        //    X509Store storeMy = new X509Store(StoreName.My,
-        //        StoreLocation.CurrentUser);
-        //    storeMy.Open(OpenFlags.ReadOnly);
+            XmlDocument xmlData = new XmlDocument();
+            byte[] sign;
 
-        //    //  Отображаем сертификаты для удобства работы
-        //    //  с примером.
-        //    Console.WriteLine("Найдены сертификаты следующих субъектов " +
-        //        "в хранилище {0}:", storeMy.Name);
-        //    foreach (X509Certificate2 cert in storeMy.Certificates)
-        //    {
-        //        Console.WriteLine("\t{0}", cert.SubjectName.Name);
-        //    }
+            using (var memoryStream = new MemoryStream())
+            {
+                await fileWithSign.CopyToAsync(memoryStream);
 
-        //    //  Ищем сертификат для подписи.
-        //    X509Certificate2Collection certColl =
-        //        storeMy.Certificates.Find(X509FindType.FindBySubjectName,
-        //        signerName, false);
-        //    Console.WriteLine(
-        //        "Найдено {0} сертификат(ов) в хранилище {1} для субъекта {2}",
-        //        certColl.Count, storeMy.Name, signerName);
+                xmlData.LoadXml(System.Text.Encoding.UTF8.GetString(memoryStream.ToArray()));
+            }
 
-        //    //  Проверяем, что нашли требуемый сертификат
-        //    if (certColl.Count == 0)
-        //    {
-        //        Console.WriteLine(
-        //            "Сертификат для данного примера не найден " +
-        //            "в хранилище. Выберите другой сертификат для подписи. ");
-        //    }
+            var dataByte = System.Text.Encoding.ASCII.GetBytes(xmlData.SelectSingleNode("//attribute").InnerText);
 
-        //    storeMy.Close();
+            var signByte = System.Convert.FromBase64String(xmlData.SelectSingleNode("//sign").InnerText);
 
-        //    //  Если найдено более одного сертификата,
-        //    //  возвращаем первый попавщийся.
-        //    return certColl[0];
-        //}
+            bool flag = VerifyMsg(dataByte, signByte);
 
+            if (flag)
+            {
+                return View("AcceptValid");
+            }
+            else
+            {
+                return View("ErrorValid");
+            }
+        }
     }
 }

@@ -1,0 +1,26 @@
+﻿@{
+    ViewData["Title"] = "Проверка сертификата";
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Проверка сертификата</title>
+</head>
+<body>
+    <h3>Проверка сертификата</h3>
+    <form method="post" enctype="multipart/form-data" action="~/Sign/Check">
+        <div class="form-group">
+            <label>Файл xml</label>
+            <input type="file" name="fileXml" />
+        </div>
+
+        <div class="form-group">
+            <label>Сертификат</label>
+            <input type="file" name="fileSign" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Проверить</button>
+    </form>
+</body>
+</html>

@@ -114,6 +114,27 @@ namespace SAPR.Migrations
                     b.ToTable("Rules");
                 });
 
+            modelBuilder.Entity("SAPR.Models.SignerUser", b =>
+                {
+                    b.Property<int>("SignerUserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<string>("Sign")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("XmlDoc")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("subjectName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("SignerUserId");
+
+                    b.ToTable("SignerUsers");
+                });
+
             modelBuilder.Entity("SAPR.Models.Field", b =>
                 {
                     b.HasOne("SAPR.Models.Purchase", null)

@@ -12,6 +12,7 @@ namespace SAPR.Models
         public DbSet<Field> Fields { get; set; }
         public DbSet<Purchase> Purchases { get; set; }
         public DbSet<ExecutableСode> ExecutableСodes { get; set; }
+        public DbSet<SignerUser> SignerUsers { get; set; }
 
 
         public DataBaseContext(DbContextOptions<DataBaseContext> options)
